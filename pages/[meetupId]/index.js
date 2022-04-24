@@ -1,31 +1,31 @@
 import MeetupDetail from "../../components/meetups/MeetupDetail"
+import {MongoClient, ObjectId} from "mongodb"
 
 function MeetupDetails({meetupData}) {
   return (
     <MeetupDetail
-      image="https://www.peerspace.com/resources/wp-content/uploads/picnic-1208229_1280-1200x600.webp"
-      title="A first meetup"
-      address="123 main st, some suburb"
-      description="The meetup description"
+      image={meetupData.image}
+      title={meetupData.title}
+      address={meetupData.address}
+      description={meetupData.description}
     />
   )
 }
 
 export const getStaticPaths = async () => {
+  
+  const client = await MongoClient.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`)
+  const db = client.db()
+  const meetupsCollection = db.collection('meetups')
+
+  const meetups = await meetupsCollection.find({}, {_id: 1}).toArray()
+  client.close()
+  
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupId: "m1",
-        },
-      },
-      {
-        params: {
-          meetupId: "m2",
-        },
-      },
-    ],
+    paths: meetups.map(meetup => ({ 
+      params: { meetupId: meetup._id.toString() } 
+    }))
   }
 }
 
@@ -34,17 +34,21 @@ export const getStaticProps = async (context) => {
   // console.log('HEY==>',context.params.meetupId)
   const meetupId = context.params.meetupId
 
-  console.log(context)
+  const client = await MongoClient.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`)
+  const db = client.db()
+  const meetupsCollection = db.collection('meetups')
+  const selectedMeetup = await meetupsCollection.findOne({_id: ObjectId(meetupId)})
+
+  client.close()
 
   return {
     props: {
       meetupData: {
-        image:
-          "https://www.peerspace.com/resources/wp-content/uploads/picnic-1208229_1280-1200x600.webp",
-        id: meetupId,
-        title: "A first meetup",
-        address: "123 main st, some suburb",
-        description: "The meetup description",
+        id: selectedMeetup._id.toString(),
+        image: selectedMeetup.image,
+        title: selectedMeetup.title,
+        address: selectedMeetup.address,
+        description: selectedMeetup.description
       },
     },
   }
