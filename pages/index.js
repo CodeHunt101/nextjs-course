@@ -1,8 +1,20 @@
-import MongoClient from "mongodb/lib/mongo_client"
-import MeetupList from "../components/meetups/MeetupList"
+import Head from 'next/head'
+import MongoClient from 'mongodb/lib/mongo_client'
+import MeetupList from '../components/meetups/MeetupList'
 
-function HomePage({meetups}) {
-  return <MeetupList meetups={meetups} />
+function HomePage({ meetups }) {
+  return (
+    <>
+      <Head>
+        <title>React Meetups</title>
+        <meta
+          name="description"
+          content="Browse a huge list of highly active meetups"
+        ></meta>
+      </Head>
+      <MeetupList meetups={meetups} />
+    </>
+  )
 }
 
 // export async function getServerSideProps(context) {
@@ -18,8 +30,10 @@ function HomePage({meetups}) {
 
 export async function getStaticProps() {
   // fetch data from an API
-  
-  const client = await MongoClient.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`)
+
+  const client = await MongoClient.connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+  )
   const db = client.db()
   const meetupsCollection = db.collection('meetups')
 
@@ -32,10 +46,10 @@ export async function getStaticProps() {
         title: meetup.title,
         address: meetup.address,
         image: meetup.image,
-        id: meetup._id.toString()
-      }))
+        id: meetup._id.toString(),
+      })),
     },
-    revalidate: 1
+    revalidate: 1,
   }
 }
 

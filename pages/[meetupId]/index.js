@@ -1,31 +1,39 @@
-import MeetupDetail from "../../components/meetups/MeetupDetail"
-import {MongoClient, ObjectId} from "mongodb"
+import MeetupDetail from '../../components/meetups/MeetupDetail'
+import { MongoClient, ObjectId } from 'mongodb'
+import Head from 'next/dist/next-server/lib/head'
 
-function MeetupDetails({meetupData}) {
+function MeetupDetails({ meetupData }) {
   return (
-    <MeetupDetail
-      image={meetupData.image}
-      title={meetupData.title}
-      address={meetupData.address}
-      description={meetupData.description}
-    />
+    <>
+      <Head>
+        <title>{meetupData.title}</title>
+        <meta name="description" content={meetupData.description}></meta>
+      </Head>
+      <MeetupDetail
+        image={meetupData.image}
+        title={meetupData.title}
+        address={meetupData.address}
+        description={meetupData.description}
+      />
+    </>
   )
 }
 
 export const getStaticPaths = async () => {
-  
-  const client = await MongoClient.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`)
+  const client = await MongoClient.connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+  )
   const db = client.db()
   const meetupsCollection = db.collection('meetups')
 
-  const meetups = await meetupsCollection.find({}, {_id: 1}).toArray()
+  const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray()
   client.close()
-  
+
   return {
     fallback: false,
-    paths: meetups.map(meetup => ({ 
-      params: { meetupId: meetup._id.toString() } 
-    }))
+    paths: meetups.map((meetup) => ({
+      params: { meetupId: meetup._id.toString() },
+    })),
   }
 }
 
@@ -34,10 +42,14 @@ export const getStaticProps = async (context) => {
   // console.log('HEY==>',context.params.meetupId)
   const meetupId = context.params.meetupId
 
-  const client = await MongoClient.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`)
+  const client = await MongoClient.connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.a28iu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+  )
   const db = client.db()
   const meetupsCollection = db.collection('meetups')
-  const selectedMeetup = await meetupsCollection.findOne({_id: ObjectId(meetupId)})
+  const selectedMeetup = await meetupsCollection.findOne({
+    _id: ObjectId(meetupId),
+  })
 
   client.close()
 
@@ -48,7 +60,7 @@ export const getStaticProps = async (context) => {
         image: selectedMeetup.image,
         title: selectedMeetup.title,
         address: selectedMeetup.address,
-        description: selectedMeetup.description
+        description: selectedMeetup.description,
       },
     },
   }
