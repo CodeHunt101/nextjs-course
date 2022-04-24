@@ -19,7 +19,6 @@ const DUMMY_MEETUPS = [
 ]
 
 function HomePage({meetups}) {
-  console.log('hello')
   return <MeetupList meetups={meetups} />
 }
 
