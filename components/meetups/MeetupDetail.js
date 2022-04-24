@@ -1,17 +1,15 @@
-import classes from './MeetupDetail.module.css';
+import classes from './MeetupDetail.module.css'
 
-function MeetupDetail(props) {
+
+function MeetupDetail({image, title, address, description}) {
   return (
     <section className={classes.detail}>
-      <img
-        src={props.image}
-        alt={props.title}
-      />
-      <h1>{props.title}</h1>
-      <address>{props.address}</address>
-      <p>{props.description}</p>
+      <img src={image} alt={title} />
+      <h1>{title}</h1>
+      <address>{address}</address>
+      <p>{description}</p>
     </section>
-  );
+  )
 }
 
-export default MeetupDetail;
+export default MeetupDetail
