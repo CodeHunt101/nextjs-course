@@ -18,15 +18,18 @@ const DUMMY_MEETUPS = [
   }
 ]
 
-function HomePage() {
+function HomePage({meetups}) {
   
-  const [loadedMeetups, setLoadedMeetups] = useState([])
-  
-  useEffect(()=> {
-    setLoadedMeetups(DUMMY_MEETUPS)
-  },[])
-  
-  return <MeetupList meetups={loadedMeetups} />
+  return <MeetupList meetups={meetups} />
+}
+
+export async function getStaticProps() {
+  // fetch data from an API
+  return {
+    props: {
+      meetups: DUMMY_MEETUPS
+    }
+  }
 }
 
 export default HomePage
