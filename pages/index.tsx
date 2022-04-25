@@ -1,8 +1,18 @@
 import Head from 'next/head'
 import MongoClient from 'mongodb/lib/mongo_client'
 import MeetupList from '../components/meetups/MeetupList'
+import { ComponentProps } from 'react'
 
-function HomePage({ meetups }) {
+type HomePageProps = {
+  meetups: {
+    title: string
+    address: string
+    image: string
+    _id: string
+  }[]
+}
+
+function HomePage({ meetups }: HomePageProps) {
   return (
     <>
       <Head>
@@ -16,7 +26,7 @@ function HomePage({ meetups }) {
     </>
   )
 }
-
+export default HomePage
 // export async function getServerSideProps(context) {
 //   const req = context.req
 //   const res = context.res
@@ -28,7 +38,10 @@ function HomePage({ meetups }) {
 //   }
 // }
 
-export async function getStaticProps() {
+export async function getStaticProps(): Promise<{
+  props: ComponentProps<typeof HomePage>
+  revalidate: number
+}> {
   // fetch data from an API
 
   const client = await MongoClient.connect(
@@ -42,15 +55,20 @@ export async function getStaticProps() {
 
   return {
     props: {
-      meetups: meetups.map((meetup) => ({
-        title: meetup.title,
-        address: meetup.address,
-        image: meetup.image,
-        id: meetup._id.toString(),
-      })),
+      meetups: meetups.map(
+        (meetup: {
+          title: string
+          address: string
+          image: string
+          _id: { toString: () => unknown }
+        }) => ({
+          title: meetup.title,
+          address: meetup.address,
+          image: meetup.image,
+          id: meetup._id.toString(),
+        })
+      ),
     },
     revalidate: 1,
   }
 }
-
-export default HomePage

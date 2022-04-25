@@ -2,18 +2,25 @@ import MeetupDetail from '../../components/meetups/MeetupDetail'
 import { MongoClient, ObjectId } from 'mongodb'
 import Head from 'next/dist/next-server/lib/head'
 
-function MeetupDetails({ meetupData }) {
+export type MeetupDetailsProps = {meetupData: {
+  image: string
+  title: string
+  address: string
+  description: string
+}}
+
+function MeetupDetails({ meetupData: {title, description, image, address} }:MeetupDetailsProps) {
   return (
     <>
       <Head>
-        <title>{meetupData.title}</title>
-        <meta name="description" content={meetupData.description}></meta>
+        <title>{title}</title>
+        <meta name="description" content={description}></meta>
       </Head>
       <MeetupDetail
-        image={meetupData.image}
-        title={meetupData.title}
-        address={meetupData.address}
-        description={meetupData.description}
+        image={image}
+        title={title}
+        address={address}
+        description={description}
       />
     </>
   )

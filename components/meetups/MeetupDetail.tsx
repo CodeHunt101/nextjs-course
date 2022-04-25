@@ -1,7 +1,8 @@
 import classes from './MeetupDetail.module.css'
+import { MeetupDetailsProps } from '../../pages/[meetupId]'
 
 
-function MeetupDetail({image, title, address, description}) {
+function MeetupDetail({image, title, address, description}: MeetupDetailsProps["meetupData"]) {
   return (
     <section className={classes.detail}>
       <img src={image} alt={title} />
